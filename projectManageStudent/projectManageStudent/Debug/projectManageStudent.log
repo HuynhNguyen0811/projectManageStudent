@@ -1,0 +1,5 @@
+﻿  Source.cpp
+C:\Users\Admin\OneDrive\Documents\GitHub\projectManageStudent\projectManageStudent\projectManageStudent\Source.cpp(226,20): warning C4244: '=': conversion from 'double' to 'unsigned __int64', possible loss of data
+C:\Users\Admin\OneDrive\Documents\GitHub\projectManageStudent\projectManageStudent\projectManageStudent\Source.cpp(233,19): warning C4101: 'c': unreferenced local variable
+C:\Users\Admin\OneDrive\Documents\GitHub\projectManageStudent\projectManageStudent\projectManageStudent\Source.cpp(233,22): warning C4101: 'd': unreferenced local variable
+  projectManageStudent.vcxproj -> C:\Users\Admin\OneDrive\Documents\GitHub\projectManageStudent\projectManageStudent\Debug\projectManageStudent.exe

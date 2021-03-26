@@ -12,21 +12,33 @@ struct Date {
 
 struct Student {
 	int No;
-	unsigned long long Student_ID;
+	string Student_ID;
 	string FirstName;
 	string LastName;
-	bool Gender;
-	Date Date_Of_Birth;
-	unsigned long long Social_ID;
+	string Gender;
+	string Date_Of_Birth;
+	string Social_ID;
+};
+
+struct NodeStudent {
+	Student data;
+	NodeStudent *pNext;
+};
+
+struct Semester {
+	int x;
+	int y;
 };
 
 struct Course {
-	unsigned long long Course_ID;
+	string Course_ID;
 	string Course_Name;
 	string Teacher_Name;
 	int Number_Of_Credits;
 	int MaxStu;
 };
+
+unsigned long long takeTime();
 
 void GotoXY(int x, int y)
 {
@@ -50,8 +62,6 @@ int isLeapYear(int year) {
 		return 28;
 	}
 }
-
-//void readFileStudent(string path, )
 
 unsigned long long calculateDate(Date x) {
 	unsigned long long seconds = 0;
@@ -79,9 +89,120 @@ unsigned long long calculateDate(Date x) {
 	return seconds * 86400;
 }
 
-void createSemester() {
+void menuStudent() {
 
+}
 
+void menuStaff() {
+
+}
+
+void createSemester(Semester &sem) {
+	sem.x = sem.y = 0;
+	int i = 2000;
+	unsigned long long current = takeTime();
+	while (sem.x == 0) {
+		Date date { 1, 9, i };
+		if (calculateDate(date) > current) {
+			sem.x = i;
+			sem.y = i + 1;
+		}
+		i++;
+	}
+}
+void deleteList(NodeStudent*& pHead) {
+	NodeStudent* pTmp = pHead;
+	while (pHead != nullptr) {
+		pHead = pHead->pNext;
+		delete pTmp;
+		pTmp = pHead;
+	}
+}
+
+void readFileStudent(string& path, NodeStudent *&pHead) {
+	cout << "Please enter the name of the file you want to input: ";
+	cin >> path;
+	ifstream fileIn;
+	fileIn.open(path + ".csv", ios_base::in);
+
+	if (fileIn.fail())
+	{
+		cout << "File is not existed" << endl;
+		readFileStudent(path, pHead);
+	}
+
+	NodeStudent* pCur = nullptr;
+	string temp;
+
+	while (!fileIn.eof()) {
+		if (pHead == nullptr) {
+			pHead = new NodeStudent;
+			pCur = pHead;
+		}
+		else {
+			pCur->pNext = new NodeStudent;
+			pCur = pCur->pNext;
+		}
+		fileIn >> pCur->data.No;
+		getline(fileIn, temp, ',');
+		getline(fileIn, pCur->data.Student_ID, ',');
+		getline(fileIn, pCur->data.FirstName, ',');
+		getline(fileIn, pCur->data.LastName, ',');
+		getline(fileIn, pCur->data.Gender, ',');
+		getline(fileIn, pCur->data.Date_Of_Birth, ',');
+		fileIn >> pCur->data.Social_ID;
+		pCur->pNext = nullptr;
+	}
+
+	fileIn.close();
+}
+
+void writeFileStudent(string path, NodeStudent* pHead) {
+	ofstream fileOut;
+	fileOut.open(path + ".csv", ios_base::out);
+	while (pHead != nullptr) {
+		fileOut << pHead->data.No << "," << pHead->data.Student_ID << "," << pHead->data.FirstName << "," << pHead->data.LastName << "," << pHead->data.Gender << "," << pHead->data.Date_Of_Birth << "," << pHead->data.Social_ID << endl;
+		pHead = pHead->pNext;
+	}
+	fileOut.close();
+}
+
+void createLogInStudent(string path, NodeStudent* pHead) {
+	ofstream fileOut;
+	fileOut.open(path + ".csv", ios_base::app);
+	while (pHead != nullptr) {
+		fileOut << pHead->data.Student_ID << "," << 1 << endl;
+		pHead = pHead->pNext;
+	}
+	fileOut.close();
+}
+
+void AtTheBeginningOfSchoolYear() {
+	system("CLS");
+	Semester sem;
+	NodeStudent* pHead = nullptr;
+	string className;
+	createSemester(sem);
+	cout << "Creating a school year (" << sem.x << "-" << sem.y << ")" << endl;
+	while (true) {
+		int temp;
+		cout << "Input '0' if you want to escape: ";
+		cin >> temp;
+		if (temp == 0) {
+			system("CLS");
+			break;
+		}
+		cout << "Creating a class:\nPlease enter class name: ";
+		cin >> className;
+		string path, newPath;
+		readFileStudent(path, pHead);
+		createLogInStudent("pasStudent.csv", pHead);
+		//newPath = to_string(sem.x) + "-" + to_string(sem.y) + className + ".csv";
+		//rename(path + ".csv", newPath);
+		writeFileStudent(to_string(sem.x) + "-" + to_string(sem.y) + className, pHead);
+		deleteList(pHead);
+	}
+	menuStaff();
 }
 
 void AtTheBeginningOfSemester() {
@@ -119,9 +240,45 @@ unsigned long long takeTime() {
 	return seconds;
 }
 
+
 int main()
 {
-	Date date{ 24, 3, 2021 };
-	cout << takeTime() - calculateDate(date);
+	string a, b; int c, d;
+	Date date{ 26, 3, 2021 };
+	NodeStudent* pHead = nullptr;
+	Semester sem;
+	cout << takeTime() - calculateDate(date) << endl;
+
+	createSemester(sem);
+
+	cout << sem.x << "-" << sem.y;
+
+	ofstream f;
+	f.open("github.csv", ios_base::app);
+
+	
+	//while (!f.eof());
+
+
+	for (int i = 0; i < 10; i++) {
+		f << i << endl;
+	}
+	//f << 50;
+
+
+	f.close();
+	/*
+	cout << endl;
+	ifstream f2;
+	f2.open("github.csv");
+	for (int i = 0; i < 10; i++) {
+		f2 >> c;
+		getline(f2, b, ',');
+		f2 >> d;
+		getline(f2, b, '\n');
+		cout << c  <<  " " << d << endl;
+	}
+	f2.close();*/
+
 	return 0;
 }
