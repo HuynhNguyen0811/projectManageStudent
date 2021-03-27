@@ -1,42 +1,4 @@
-#include <iostream>
-#include <stdio.h>
-#include <Windows.h>
-#include <time.h>  
-#include <string>
-#include <fstream>
-using namespace std;
-
-struct Date {
-	int Day, Month, Year;
-};
-
-struct Student {
-	int No;
-	string Student_ID;
-	string FirstName;
-	string LastName;
-	string Gender;
-	string Date_Of_Birth;
-	string Social_ID;
-};
-
-struct NodeStudent {
-	Student data;
-	NodeStudent *pNext;
-};
-
-struct Semester {
-	int x;
-	int y;
-};
-
-struct Course {
-	string Course_ID;
-	string Course_Name;
-	string Teacher_Name;
-	int Number_Of_Credits;
-	int MaxStu;
-};
+#include "Header.h"
 
 unsigned long long takeTime();
 
@@ -97,15 +59,15 @@ void menuStaff() {
 
 }
 
-void createSemester(Semester &sem) {
-	sem.x = sem.y = 0;
+void createSchoolYear(SchoolYear &sy) {
+	sy.x = sy.y = 0;
 	int i = 2000;
 	unsigned long long current = takeTime();
-	while (sem.x == 0) {
+	while (sy.x == 0) {
 		Date date { 1, 9, i };
 		if (calculateDate(date) > current) {
-			sem.x = i;
-			sem.y = i + 1;
+			sy.x = i;
+			sy.y = i + 1;
 		}
 		i++;
 	}
@@ -134,7 +96,7 @@ void readFileStudent(string& path, NodeStudent *&pHead) {
 	NodeStudent* pCur = nullptr;
 	string temp;
 
-	while (!fileIn.eof()) {
+	while (fileIn) {
 		if (pHead == nullptr) {
 			pHead = new NodeStudent;
 			pCur = pHead;
@@ -143,8 +105,10 @@ void readFileStudent(string& path, NodeStudent *&pHead) {
 			pCur->pNext = new NodeStudent;
 			pCur = pCur->pNext;
 		}
-		fileIn >> pCur->data.No;
-		getline(fileIn, temp, ',');
+		//fileIn >> pCur->data.No;
+		//cout << pCur->data.No;
+		getline(fileIn, pCur->data.No, ',');
+		//pCur->data.No = atoi(temp);
 		getline(fileIn, pCur->data.Student_ID, ',');
 		getline(fileIn, pCur->data.FirstName, ',');
 		getline(fileIn, pCur->data.LastName, ',');
@@ -177,13 +141,23 @@ void createLogInStudent(string path, NodeStudent* pHead) {
 	fileOut.close();
 }
 
+void createClassList(string className, SchoolYear sy) {
+	ofstream fileOut;
+	fileOut.open(to_string(sy.x) + "-" + to_string(sy.y) + (string) "year1ClassName" + ".csv", ios_base::app);
+
+	fileOut << className << endl;
+	
+	
+	fileOut.close();
+}
+
 void AtTheBeginningOfSchoolYear() {
 	system("CLS");
-	Semester sem;
+	SchoolYear sy;
 	NodeStudent* pHead = nullptr;
 	string className;
-	createSemester(sem);
-	cout << "Creating a school year (" << sem.x << "-" << sem.y << ")" << endl;
+	createSchoolYear(sy);
+	cout << "Creating a school year (" << sy.x << "-" << sy.y << ")" << endl;
 	while (true) {
 		int temp;
 		cout << "Input '0' if you want to escape: ";
@@ -194,12 +168,13 @@ void AtTheBeginningOfSchoolYear() {
 		}
 		cout << "Creating a class:\nPlease enter class name: ";
 		cin >> className;
+		createClassList(className, sy);
 		string path, newPath;
 		readFileStudent(path, pHead);
-		createLogInStudent("pasStudent.csv", pHead);
-		//newPath = to_string(sem.x) + "-" + to_string(sem.y) + className + ".csv";
-		//rename(path + ".csv", newPath);
-		writeFileStudent(to_string(sem.x) + "-" + to_string(sem.y) + className, pHead);
+		createLogInStudent("passStudent", pHead);
+		//newPath = to_string(sem.x) + "-" + to_string(sem.y) + className;
+		//rename(path + ".csv", newPath + ".csv");
+		writeFileStudent(to_string(sy.x) + "-" + to_string(sy.y) + "year1" + className, pHead);
 		deleteList(pHead);
 	}
 	menuStaff();
@@ -246,15 +221,17 @@ int main()
 	string a, b; int c, d;
 	Date date{ 26, 3, 2021 };
 	NodeStudent* pHead = nullptr;
-	Semester sem;
+	SchoolYear sy;
 	cout << takeTime() - calculateDate(date) << endl;
 
-	createSemester(sem);
+	createSchoolYear(sy);
 
-	cout << sem.x << "-" << sem.y;
+	cout << sy.x << "-" << sy.y;
 
-	ofstream f;
-	f.open("github.csv", ios_base::app);
+	AtTheBeginningOfSchoolYear();
+
+	/*ofstream f;
+	f.open("abc.txt", ios_base::out);
 
 	
 	//while (!f.eof());
@@ -267,7 +244,7 @@ int main()
 
 
 	f.close();
-	/*
+	
 	cout << endl;
 	ifstream f2;
 	f2.open("github.csv");
