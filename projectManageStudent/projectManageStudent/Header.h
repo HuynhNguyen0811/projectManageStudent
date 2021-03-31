@@ -12,13 +12,13 @@ struct Date {
 };
 
 struct Student {
-	string No;
-	string Student_ID;
+	int No;
+	unsigned long long Student_ID;
 	string FirstName;
 	string LastName;
 	string Gender;
 	string Date_Of_Birth;
-	string Social_ID;
+	unsigned long long Social_ID;
 
 	double GPA = 0;
 };

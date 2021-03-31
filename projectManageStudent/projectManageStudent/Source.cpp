@@ -81,6 +81,24 @@ void deleteList(NodeStudent*& pHead) {
 	}
 }
 
+int stringToInt(string str) {
+	int sum = 0;
+	for (int i = 1; i < str.size(); i++) {
+		sum *= 10;
+		sum += (int)(str[i] - 48);
+	}
+	return sum;
+}
+
+unsigned long long stringToLong(string str) {
+	unsigned long long sum = 0;
+	for (int i = 0; i < str.size(); i++) {
+		sum *= 10;
+		sum += (unsigned long long)(str[i] - 48);
+	}
+	return sum;
+}
+
 void readFileStudent(string& path, NodeStudent *&pHead) {
 	cout << "Please enter the name of the file you want to input: ";
 	cin >> path;
@@ -95,21 +113,25 @@ void readFileStudent(string& path, NodeStudent *&pHead) {
 
 	NodeStudent* pCur = nullptr;
 	string temp;
-
+	//fileIn.ignore(1000, char(191));
+	getline(fileIn, temp, char(191));
 	while (fileIn) {
 		if (pHead == nullptr) {
 			pHead = new NodeStudent;
 			pCur = pHead;
+			getline(fileIn, temp, ',');
+			pCur->data.No = stringToInt(char(32) + temp);
 		}
 		else {
 			pCur->pNext = new NodeStudent;
 			pCur = pCur->pNext;
+			getline(fileIn, temp, ',');
+			pCur->data.No = stringToInt(temp);
 		}
-		//fileIn >> pCur->data.No;
-		//cout << pCur->data.No;
-		getline(fileIn, pCur->data.No, ',');
-		//pCur->data.No = atoi(temp);
-		getline(fileIn, pCur->data.Student_ID, ',');
+
+		getline(fileIn, temp, ',');
+		pCur->data.Student_ID = stringToLong(temp);
+
 		getline(fileIn, pCur->data.FirstName, ',');
 		getline(fileIn, pCur->data.LastName, ',');
 		getline(fileIn, pCur->data.Gender, ',');
@@ -124,6 +146,7 @@ void readFileStudent(string& path, NodeStudent *&pHead) {
 void writeFileStudent(string path, NodeStudent* pHead) {
 	ofstream fileOut;
 	fileOut.open(path + ".csv", ios_base::out);
+	fileOut << char(239) << char(187) << char(191);
 	while (pHead != nullptr) {
 		fileOut << pHead->data.No << "," << pHead->data.Student_ID << "," << pHead->data.FirstName << "," << pHead->data.LastName << "," << pHead->data.Gender << "," << pHead->data.Date_Of_Birth << "," << pHead->data.Social_ID << endl;
 		pHead = pHead->pNext;
@@ -226,7 +249,10 @@ int main()
 
 	createSchoolYear(sy);
 
-	cout << sy.x << "-" << sy.y;
+	cout << sy.x << "-" << sy.y << endl;
+
+	//cout << stringToInt("1234") << endl;
+	//cout << stringToLong("123456789") << endl;
 
 	AtTheBeginningOfSchoolYear();
 
