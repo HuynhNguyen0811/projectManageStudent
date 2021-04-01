@@ -3,7 +3,7 @@
 
 int stringToInt(string str) {
 	int sum = 0;
-	for (int i = 1; i < str.size(); i++) {
+	for (int i = 0; i < str.size(); i++) {
 		sum *= 10;
 		sum += (int)(str[i] - 48);
 	}

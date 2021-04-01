@@ -54,14 +54,89 @@ unsigned long long calculateDate(Date x) {
 //ofstream& operator<<(ofstream& f, Date date) {
 //	f << date.Day << char(47) << date.Month << char(47) << date.Year;
 //}
+void menuStudent();
+void menuStaff();
+int stringToInt(string str);
+unsigned long long stringToLong(string str);
+Date stringToDate(string str);
+bool checkLogin(string path, unsigned long long ID, string password);
+
+void login() {
+	int flag, out;
+	unsigned long long ID = NULL;
+	string password = "";
+	bool check = 0;
+	cout << "Login as student or staff: \n1.Student\n2.Staff\nPress any others value to escape\n";
+	cin >> flag;
+	switch (flag) {
+	case 1:
+		while (check == 0) {
+			if (ID != NULL && password != "") {
+				cout << "Please enter again\n";
+				cout << "Enter 0 if you want to come back to main menu: ";
+				cin >> out;
+				if (out == 0) login();
+			}
+			cout << "ID: ";
+			cin >> ID;
+			cout << "Password: ";
+			cin >> password;
+			check = checkLogin("passStudent", ID, password);
+		}
+		system("CLS");
+		menuStudent();
+		break;
+	case 2:
+		while (check == 0) {
+			if (ID != NULL && password != "") {
+				cout << "Please enter again\n";
+				cout << "Enter 0 if you want to come back to main menu: ";
+				cin >> out;
+				if (out == 0) login();
+			}
+			cout << "ID: ";
+			cin >> ID;
+			cout << "Password: ";
+			cin >> password;
+			check = checkLogin("passStaff", ID, password);
+		}
+		system("CLS");
+		menuStaff();
+		break;
+	default:
+		break;
+	}
+}
 
 void menuStudent() {
-
+	cout << "Log in as student successfull";
 }
 
 void menuStaff() {
-
+	cout << "Log in as staff successfull";
 }
+
+bool checkLogin(string path, unsigned long long ID, string password) {
+	ifstream fileIn;
+	fileIn.open(path + ".csv", ios_base::in);
+
+	string temp, tempPassword;
+	unsigned long long tempID;
+	while (fileIn) {
+		getline(fileIn, temp, ',');
+		tempID = stringToLong(temp);
+		fileIn >> tempPassword;
+		if (tempID == ID && tempPassword == password) {
+			fileIn.close();
+			return 1;
+		}
+	}
+
+	fileIn.close();
+	return 0;
+}
+
+
 
 void createSchoolYear(SchoolYear &sy) {
 	sy.x = sy.y = 0;
@@ -100,9 +175,11 @@ void deleteLastMember(NodeStudent*& pHead) {
 
 int stringToInt(string str) {
 	int sum = 0;
-	for (int i = 1; i < str.size(); i++) {
-		sum *= 10;
-		sum += (int)(str[i] - 48);
+	for (int i = 0; i < str.size(); i++) {
+		if ((int)(str[i] - 48) >= 0 && (int)(str[i] - 48) <= 9) {
+			sum *= 10;
+			sum += (int)(str[i] - 48);
+		}
 	}
 	return sum;
 }
@@ -110,8 +187,10 @@ int stringToInt(string str) {
 unsigned long long stringToLong(string str) {
 	unsigned long long sum = 0;
 	for (int i = 0; i < str.size(); i++) {
-		sum *= 10;
-		sum += (unsigned long long)(str[i] - 48);
+		if ((unsigned long long)(str[i] - 48) >= 0 && (unsigned long long)(str[i] - 48) <= 9) {
+			sum *= 10;
+			sum += (unsigned long long)(str[i] - 48);
+		}
 	}
 	return sum;
 }
@@ -153,22 +232,18 @@ void readFileStudent(string& path, NodeStudent *&pHead) {
 
 	NodeStudent* pCur = nullptr;
 	string temp;
-	//fileIn.ignore(1000, char(191));
 	getline(fileIn, temp, char(191));
 	while (fileIn) {
 		if (pHead == nullptr) {
 			pHead = new NodeStudent;
 			pCur = pHead;
-			getline(fileIn, temp, ',');
-			pCur->data.No = stringToInt(char(32) + temp);
 		}
 		else {
 			pCur->pNext = new NodeStudent;
 			pCur = pCur->pNext;
-			getline(fileIn, temp, ',');
-			pCur->data.No = stringToInt(temp);
 		}
-
+		getline(fileIn, temp, ',');
+		pCur->data.No = stringToInt(temp);
 		getline(fileIn, temp, ',');
 		pCur->data.Student_ID = stringToLong(temp);
 
@@ -209,8 +284,6 @@ void createClassList(string className, SchoolYear sy) {
 	fileOut.open(to_string(sy.x) + "-" + to_string(sy.y) + (string) "year1ClassName" + ".csv", ios_base::app);
 
 	fileOut << className << endl;
-	
-	
 	fileOut.close();
 }
 
@@ -260,6 +333,8 @@ void AtTheBeginningOfSemester() {
 		break;
 	case 6:
 		break;
+	default:
+		break;
 	}
 	delete flag;
 }
@@ -296,34 +371,9 @@ int main()
 	//cout << stringToInt("1234") << endl;
 	//cout << stringToLong("123456789") << endl;
 
-	AtTheBeginningOfSchoolYear();
+	login();
 
-	/*ofstream f;
-	f.open("abc.txt", ios_base::out);
-
-	
-	//while (!f.eof());
-
-
-	for (int i = 0; i < 10; i++) {
-		f << i << endl;
-	}
-	//f << 50;
-
-
-	f.close();
-	
-	cout << endl;
-	ifstream f2;
-	f2.open("github.csv");
-	for (int i = 0; i < 10; i++) {
-		f2 >> c;
-		getline(f2, b, ',');
-		f2 >> d;
-		getline(f2, b, '\n');
-		cout << c  <<  " " << d << endl;
-	}
-	f2.close();*/
+	//AtTheBeginningOfSchoolYear();
 
 	return 0;
 }
