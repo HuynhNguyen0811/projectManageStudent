@@ -51,6 +51,10 @@ unsigned long long calculateDate(Date x) {
 	return seconds * 86400;
 }
 
+//ofstream& operator<<(ofstream& f, Date date) {
+//	f << date.Day << char(47) << date.Month << char(47) << date.Year;
+//}
+
 void menuStudent() {
 
 }
@@ -81,6 +85,19 @@ void deleteList(NodeStudent*& pHead) {
 	}
 }
 
+void deleteLastMember(NodeStudent*& pHead) {
+	if (pHead == nullptr) return;
+	if (pHead->pNext == nullptr) {
+		delete pHead;
+		pHead = nullptr;
+	}
+	NodeStudent* pCur = pHead;
+	while (pCur->pNext->pNext != nullptr) pCur = pCur->pNext;
+	NodeStudent* temp = pCur->pNext;
+	pCur->pNext = pCur->pNext->pNext;
+	delete temp;
+}
+
 int stringToInt(string str) {
 	int sum = 0;
 	for (int i = 1; i < str.size(); i++) {
@@ -97,6 +114,29 @@ unsigned long long stringToLong(string str) {
 		sum += (unsigned long long)(str[i] - 48);
 	}
 	return sum;
+}
+
+Date stringToDate(string str) {
+	int day = 0, month = 0, year = 0;
+	int i = 0;
+	while (i < str.size() && (int)str[i] != 47) {
+		day *= 10;
+		day += (int)(str[i] - 48);
+		i++;
+	}
+	i++;
+	while (i < str.size() && (int)str[i] != 47) {
+		month *= 10;
+		month += (int)(str[i] - 48);
+		i++;
+	}
+	i++;
+	while (i < str.size()) {
+		year *= 10;
+		year += (int)(str[i] - 48);
+		i++;
+	}
+	return { day, month, year };
 }
 
 void readFileStudent(string& path, NodeStudent *&pHead) {
@@ -135,11 +175,11 @@ void readFileStudent(string& path, NodeStudent *&pHead) {
 		getline(fileIn, pCur->data.FirstName, ',');
 		getline(fileIn, pCur->data.LastName, ',');
 		getline(fileIn, pCur->data.Gender, ',');
-		getline(fileIn, pCur->data.Date_Of_Birth, ',');
+		getline(fileIn, temp, ',');
+		pCur->data.Date_Of_Birth = stringToDate(temp);
 		fileIn >> pCur->data.Social_ID;
 		pCur->pNext = nullptr;
 	}
-
 	fileIn.close();
 }
 
@@ -147,8 +187,8 @@ void writeFileStudent(string path, NodeStudent* pHead) {
 	ofstream fileOut;
 	fileOut.open(path + ".csv", ios_base::out);
 	fileOut << char(239) << char(187) << char(191);
-	while (pHead != nullptr) {
-		fileOut << pHead->data.No << "," << pHead->data.Student_ID << "," << pHead->data.FirstName << "," << pHead->data.LastName << "," << pHead->data.Gender << "," << pHead->data.Date_Of_Birth << "," << pHead->data.Social_ID << endl;
+	while (pHead->pNext != nullptr) {
+		fileOut << pHead->data.No << "," << pHead->data.Student_ID << "," << pHead->data.FirstName << "," << pHead->data.LastName << "," << pHead->data.Gender << "," << pHead->data.Date_Of_Birth.Day << char(47) << pHead->data.Date_Of_Birth.Month << char(47) << pHead->data.Date_Of_Birth.Year << "," << pHead->data.Social_ID << endl;
 		pHead = pHead->pNext;
 	}
 	fileOut.close();
@@ -157,7 +197,7 @@ void writeFileStudent(string path, NodeStudent* pHead) {
 void createLogInStudent(string path, NodeStudent* pHead) {
 	ofstream fileOut;
 	fileOut.open(path + ".csv", ios_base::app);
-	while (pHead != nullptr) {
+	while (pHead->pNext != nullptr) {
 		fileOut << pHead->data.Student_ID << "," << 1 << endl;
 		pHead = pHead->pNext;
 	}
@@ -250,6 +290,8 @@ int main()
 	createSchoolYear(sy);
 
 	cout << sy.x << "-" << sy.y << endl;
+
+	//cout << endl << stringToDate(" ").Day /*<< stringToDate("8112002").Month << stringToDate("8112002").Year*/;
 
 	//cout << stringToInt("1234") << endl;
 	//cout << stringToLong("123456789") << endl;

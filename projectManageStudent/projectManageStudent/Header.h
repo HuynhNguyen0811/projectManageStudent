@@ -17,7 +17,7 @@ struct Student {
 	string FirstName;
 	string LastName;
 	string Gender;
-	string Date_Of_Birth;
+	Date Date_Of_Birth;
 	unsigned long long Social_ID;
 
 	double GPA = 0;

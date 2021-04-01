@@ -10,9 +10,8 @@ struct student {
 	std::string FirstName;
 	std::string LastName;
 	std::string Gender;
-	std::string Date_Of_Birth;
+	date Date_Of_Birth;
 	unsigned long long Social_ID;
-
 
 	_score* score = nullptr;
 	_course* course = nullptr;
