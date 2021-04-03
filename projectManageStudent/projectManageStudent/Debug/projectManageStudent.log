@@ -1,6 +1,0 @@
-﻿  Source.cpp
-  The contents of <filesystem> are available only with C++17 or later.
-C:\Users\Admin\OneDrive\Documents\GitHub\projectManageStudent\projectManageStudent\projectManageStudent\Source.cpp(252,20): warning C4244: '=': conversion from 'double' to 'unsigned __int64', possible loss of data
-C:\Users\Admin\OneDrive\Documents\GitHub\projectManageStudent\projectManageStudent\projectManageStudent\Source.cpp(259,19): warning C4101: 'c': unreferenced local variable
-C:\Users\Admin\OneDrive\Documents\GitHub\projectManageStudent\projectManageStudent\projectManageStudent\Source.cpp(259,22): warning C4101: 'd': unreferenced local variable
-  projectManageStudent.vcxproj -> C:\Users\Admin\OneDrive\Documents\GitHub\projectManageStudent\projectManageStudent\Debug\projectManageStudent.exe

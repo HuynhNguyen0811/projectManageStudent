@@ -5,6 +5,12 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
+
+#include<io.h>
+#include <fcntl.h>
+
+#include<locale>
+#include<codecvt>
 using namespace std;
 
 struct Date {
@@ -12,13 +18,24 @@ struct Date {
 };
 
 struct Student {
-	string No;
-	string Student_ID;
+	int No;
+	unsigned long long Student_ID;
 	string FirstName;
 	string LastName;
 	string Gender;
-	string Date_Of_Birth;
-	string Social_ID;
+	Date Date_Of_Birth;
+	unsigned long long Social_ID;
+
+	double GPA = 0;
+};
+struct WStudent {
+	int No;
+	unsigned long long Student_ID;
+	wstring FirstName;
+	wstring LastName;
+	wstring Gender;
+	Date Date_Of_Birth;
+	unsigned long long Social_ID;
 
 	double GPA = 0;
 };

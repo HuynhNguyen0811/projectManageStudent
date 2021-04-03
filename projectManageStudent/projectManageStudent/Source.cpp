@@ -51,12 +51,228 @@ unsigned long long calculateDate(Date x) {
 	return seconds * 86400;
 }
 
-void menuStudent() {
+//ofstream& operator<<(ofstream& f, Date date) {
+//	f << date.Day << char(47) << date.Month << char(47) << date.Year;
+//}
 
+void menuStudent(unsigned long long& ID, string className);
+void menuStaff();
+int stringToInt(string str);
+unsigned long long stringToLong(string str);
+Date stringToDate(string str);
+bool checkLogin(string path, unsigned long long ID, string password, string& className);
+void findAndPrintStudent(unsigned long long ID, string className);
+void infoStudent(WStudent stu);
+
+void _LText() //chuyen sang tieng viet
+{
+	_setmode(_fileno(stdin), _O_U16TEXT);
+	_setmode(_fileno(stdout), _O_U16TEXT);
+}
+void _SText() { // tat tieng viet
+	_setmode(_fileno(stdin), _O_TEXT);
+	_setmode(_fileno(stdout), _O_TEXT);
+}
+
+int wstringToInt(wstring str) {
+	int sum = 0;
+	for (int i = 0; i < str.size(); i++) {
+		if ((int)(str[i] - 48) >= 0 && (int)(str[i] - 48) <= 9) {
+			sum *= 10;
+			sum += (int)(str[i] - 48);
+		}
+	}
+	return sum;
+}
+
+unsigned long long wstringToLong(wstring str) {
+	unsigned long long sum = 0;
+	for (int i = 0; i < str.size(); i++) {
+		if ((unsigned long long)(str[i] - 48) >= 0 && (unsigned long long)(str[i] - 48) <= 9) {
+			sum *= 10;
+			sum += (unsigned long long)(str[i] - 48);
+		}
+	}
+	return sum;
+}
+
+Date wstringToDate(wstring str) {
+	int day = 0, month = 0, year = 0;
+	int i = 0;
+	while (i < str.size() && (int)str[i] != 47) {
+		day *= 10;
+		day += (int)(str[i] - 48);
+		i++;
+	}
+	i++;
+	while (i < str.size() && (int)str[i] != 47) {
+		month *= 10;
+		month += (int)(str[i] - 48);
+		i++;
+	}
+	i++;
+	while (i < str.size()) {
+		year *= 10;
+		year += (int)(str[i] - 48);
+		i++;
+	}
+	return { day, month, year };
+}
+
+void login(unsigned long long& ID, string& className) {
+	system("CLS");
+	int flag, out;
+	//unsigned long long ID = NULL;
+	string password = "";
+	bool check = 0;
+	cout << "Login as student or staff: \n1.Student\n2.Staff\nEnter any others value to escape\n";
+	cin >> flag;
+	switch (flag) {
+	case 1:
+		while (check == 0) {
+			if (ID != NULL && password != "") {
+				cout << "Please enter again\n";
+				cout << "Enter 0 if you want to come back to main menu: ";
+				cin >> out;
+				if (out == 0) login(ID, className);
+			}
+			cout << "ID: ";
+			cin >> ID;
+			cout << "Password: ";
+			cin >> password;
+			check = checkLogin("passStudent", ID, password, className);
+		}
+		system("CLS");
+		menuStudent(ID, className);
+		break;
+	case 2:
+		while (check == 0) {
+			if (ID != NULL && password != "") {
+				cout << "Please enter again\n";
+				cout << "Enter 0 if you want to come back to main menu: ";
+				cin >> out;
+				if (out == 0) login(ID, className);
+			}
+			cout << "ID: ";
+			cin >> ID;
+			cout << "Password: ";
+			cin >> password;
+			check = checkLogin("passStaff", ID, password, className);
+		}
+		system("CLS");
+		menuStaff();
+		break;
+	default:
+		break;
+	}
+}
+
+void menuStudent(unsigned long long& ID, string className) {
+	system("CLS");
+	int flag;
+	cout << "\n1.Check your profile\n2.Sign course\n3.View enrolled courses\n4.View students in course\n5.Change password\n6.Log out\n0.Escape";
+	cin >> flag;
+	switch (flag) {
+	case 1:
+		findAndPrintStudent(ID, className);
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	case 5:
+		break;
+	case 6:
+		ID = NULL;
+		login(ID, className);
+		break;
+	default:
+		break;
+	}
 }
 
 void menuStaff() {
+	system("CLS");
+	cout << "Log in as staff successfull";
+	int flag;
+	cin >> flag;
+	switch (flag) {
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	}
+}
 
+void findAndPrintStudent(unsigned long long ID, string className) {
+	wifstream fileIn;
+	fileIn.open(className + ".csv", ios_base::in);
+	fileIn.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t, 0x10ffff, std::generate_header>));
+	WStudent stu;
+	wstring temp, tempID, tempDate;
+	wchar_t a = ',', b = '\n';
+	while (fileIn) {
+		getline(fileIn, temp, a);
+		getline(fileIn, tempID, a);
+		if (wstringToLong(tempID) == ID) {
+			stu.No = wstringToInt(temp);
+			stu.Student_ID = wstringToLong(tempID);
+			getline(fileIn, stu.FirstName, a);
+			getline(fileIn, stu.LastName, a);
+			getline(fileIn, stu.Gender, a);
+			getline(fileIn, tempDate, a);
+			stu.Date_Of_Birth = wstringToDate(tempDate);
+			fileIn >> stu.Social_ID;
+			fileIn.close();
+			infoStudent(stu);
+			system("PAUSE");
+			menuStudent(ID, className);
+		}
+		else {
+			getline(fileIn, temp, b);
+		}
+	}
+	fileIn.close();
+	cout << "Can't find information\n";
+	system("PAUSE");
+	menuStudent(ID, className);
+}
+
+void infoStudent(WStudent stu) {
+	_LText();
+	wcout << "Number in class: " << stu.No << endl;
+	wcout << "ID: " << stu.Student_ID << endl;
+	wcout << "First Name: " << stu.FirstName << endl;
+	wcout << "Last name: " << stu.LastName << endl;
+	wcout << "Sex: " << stu.Gender << endl;
+	wcout << "Date of birth: " << stu.Date_Of_Birth.Day << "/" << stu.Date_Of_Birth.Month << "/" << stu.Date_Of_Birth.Year << endl;
+	wcout << "Social ID: " << stu.Social_ID << endl;
+	_SText();
+}
+
+bool checkLogin(string path, unsigned long long ID, string password, string& className) {
+	ifstream fileIn;
+	fileIn.open(path + ".csv", ios_base::in);
+
+	string temp, tempPassword, tempClassName;
+	unsigned long long tempID;
+	while (fileIn) {
+		getline(fileIn, temp, ',');
+		tempID = stringToLong(temp);
+		getline(fileIn, tempPassword, ',');
+		fileIn >> tempClassName;
+		if (tempID == ID && tempPassword == password) {
+			className = tempClassName;
+			fileIn.close();
+			return 1;
+		}
+	}
+	fileIn.close();
+	return 0;
 }
 
 void createSchoolYear(SchoolYear &sy) {
@@ -81,6 +297,64 @@ void deleteList(NodeStudent*& pHead) {
 	}
 }
 
+void deleteLastMember(NodeStudent*& pHead) {
+	if (pHead == nullptr) return;
+	if (pHead->pNext == nullptr) {
+		delete pHead;
+		pHead = nullptr;
+	}
+	NodeStudent* pCur = pHead;
+	while (pCur->pNext->pNext != nullptr) pCur = pCur->pNext;
+	NodeStudent* temp = pCur->pNext;
+	pCur->pNext = pCur->pNext->pNext;
+	delete temp;
+}
+
+int stringToInt(string str) {
+	int sum = 0;
+	for (int i = 0; i < str.size(); i++) {
+		if ((int)(str[i] - 48) >= 0 && (int)(str[i] - 48) <= 9) {
+			sum *= 10;
+			sum += (int)(str[i] - 48);
+		}
+	}
+	return sum;
+}
+
+unsigned long long stringToLong(string str) {
+	unsigned long long sum = 0;
+	for (int i = 0; i < str.size(); i++) {
+		if ((unsigned long long)(str[i] - 48) >= 0 && (unsigned long long)(str[i] - 48) <= 9) {
+			sum *= 10;
+			sum += (unsigned long long)(str[i] - 48);
+		}
+	}
+	return sum;
+}
+
+Date stringToDate(string str) {
+	int day = 0, month = 0, year = 0;
+	int i = 0;
+	while (i < str.size() && (int)str[i] != 47) {
+		day *= 10;
+		day += (int)(str[i] - 48);
+		i++;
+	}
+	i++;
+	while (i < str.size() && (int)str[i] != 47) {
+		month *= 10;
+		month += (int)(str[i] - 48);
+		i++;
+	}
+	i++;
+	while (i < str.size()) {
+		year *= 10;
+		year += (int)(str[i] - 48);
+		i++;
+	}
+	return { day, month, year };
+}
+
 void readFileStudent(string& path, NodeStudent *&pHead) {
 	cout << "Please enter the name of the file you want to input: ";
 	cin >> path;
@@ -89,13 +363,13 @@ void readFileStudent(string& path, NodeStudent *&pHead) {
 
 	if (fileIn.fail())
 	{
-		cout << "File is not existed" << endl;
+		cout << "File is not existed " << endl;
 		readFileStudent(path, pHead);
 	}
 
 	NodeStudent* pCur = nullptr;
 	string temp;
-
+	getline(fileIn, temp, char(191));
 	while (fileIn) {
 		if (pHead == nullptr) {
 			pHead = new NodeStudent;
@@ -105,37 +379,38 @@ void readFileStudent(string& path, NodeStudent *&pHead) {
 			pCur->pNext = new NodeStudent;
 			pCur = pCur->pNext;
 		}
-		//fileIn >> pCur->data.No;
-		//cout << pCur->data.No;
-		getline(fileIn, pCur->data.No, ',');
-		//pCur->data.No = atoi(temp);
-		getline(fileIn, pCur->data.Student_ID, ',');
+		getline(fileIn, temp, ',');
+		pCur->data.No = stringToInt(temp);
+		getline(fileIn, temp, ',');
+		pCur->data.Student_ID = stringToLong(temp);
+
 		getline(fileIn, pCur->data.FirstName, ',');
 		getline(fileIn, pCur->data.LastName, ',');
 		getline(fileIn, pCur->data.Gender, ',');
-		getline(fileIn, pCur->data.Date_Of_Birth, ',');
+		getline(fileIn, temp, ',');
+		pCur->data.Date_Of_Birth = stringToDate(temp);
 		fileIn >> pCur->data.Social_ID;
 		pCur->pNext = nullptr;
 	}
-
 	fileIn.close();
 }
 
 void writeFileStudent(string path, NodeStudent* pHead) {
 	ofstream fileOut;
 	fileOut.open(path + ".csv", ios_base::out);
-	while (pHead != nullptr) {
-		fileOut << pHead->data.No << "," << pHead->data.Student_ID << "," << pHead->data.FirstName << "," << pHead->data.LastName << "," << pHead->data.Gender << "," << pHead->data.Date_Of_Birth << "," << pHead->data.Social_ID << endl;
+	fileOut << char(239) << char(187) << char(191);
+	while (pHead->pNext != nullptr) {
+		fileOut << pHead->data.No << "," << pHead->data.Student_ID << "," << pHead->data.FirstName << "," << pHead->data.LastName << "," << pHead->data.Gender << "," << pHead->data.Date_Of_Birth.Day << char(47) << pHead->data.Date_Of_Birth.Month << char(47) << pHead->data.Date_Of_Birth.Year << "," << pHead->data.Social_ID << endl;
 		pHead = pHead->pNext;
 	}
 	fileOut.close();
 }
 
-void createLogInStudent(string path, NodeStudent* pHead) {
+void createLogInStudent(string path, NodeStudent* pHead, string classname) {
 	ofstream fileOut;
 	fileOut.open(path + ".csv", ios_base::app);
-	while (pHead != nullptr) {
-		fileOut << pHead->data.Student_ID << "," << 1 << endl;
+	while (pHead->pNext != nullptr) {
+		fileOut << pHead->data.Student_ID << "," << 1 << "," << classname << endl;
 		pHead = pHead->pNext;
 	}
 	fileOut.close();
@@ -143,11 +418,9 @@ void createLogInStudent(string path, NodeStudent* pHead) {
 
 void createClassList(string className, SchoolYear sy) {
 	ofstream fileOut;
-	fileOut.open(to_string(sy.x) + "-" + to_string(sy.y) + (string) "year1ClassName" + ".csv", ios_base::app);
+	fileOut.open(to_string(sy.x) + to_string(sy.y) + (string)"year1ClassName" + ".csv", ios_base::app);
 
 	fileOut << className << endl;
-	
-	
 	fileOut.close();
 }
 
@@ -158,6 +431,17 @@ void AtTheBeginningOfSchoolYear() {
 	string className;
 	createSchoolYear(sy);
 	cout << "Creating a school year (" << sy.x << "-" << sy.y << ")" << endl;
+	int flag;
+	cout << "Choose method to input class name\n1.From keyboard\n2.From a file\n";
+	cin >> flag;
+	switch (flag) {
+	case 1:
+		break;
+	case 2:
+		break;
+	default:
+		break;
+	}
 	while (true) {
 		int temp;
 		cout << "Input '0' if you want to escape: ";
@@ -168,13 +452,13 @@ void AtTheBeginningOfSchoolYear() {
 		}
 		cout << "Creating a class:\nPlease enter class name: ";
 		cin >> className;
-		createClassList(className, sy);
+		createClassList(to_string(sy.x) + to_string(sy.y) + "year1" + className, sy);
 		string path, newPath;
 		readFileStudent(path, pHead);
-		createLogInStudent("passStudent", pHead);
+		createLogInStudent("passStudent", pHead, className);
 		//newPath = to_string(sem.x) + "-" + to_string(sem.y) + className;
 		//rename(path + ".csv", newPath + ".csv");
-		writeFileStudent(to_string(sy.x) + "-" + to_string(sy.y) + "year1" + className, pHead);
+		writeFileStudent(/*to_string(sy.x) + to_string(sy.y) + "year1" + */className, pHead);
 		deleteList(pHead);
 	}
 	menuStaff();
@@ -196,6 +480,8 @@ void AtTheBeginningOfSemester() {
 	case 5:
 		break;
 	case 6:
+		break;
+	default:
 		break;
 	}
 	delete flag;
@@ -226,36 +512,18 @@ int main()
 
 	createSchoolYear(sy);
 
-	cout << sy.x << "-" << sy.y;
+	cout << sy.x << "-" << sy.y << endl;
 
-	AtTheBeginningOfSchoolYear();
+	//cout << endl << stringToDate(" ").Day /*<< stringToDate("8112002").Month << stringToDate("8112002").Year*/;
 
-	/*ofstream f;
-	f.open("abc.txt", ios_base::out);
-
+	//cout << stringToInt("1234") << endl;
+	//cout << stringToLong("123456789") << endl;
 	
-	//while (!f.eof());
+	//AtTheBeginningOfSchoolYear();
 
-
-	for (int i = 0; i < 10; i++) {
-		f << i << endl;
-	}
-	//f << 50;
-
-
-	f.close();
-	
-	cout << endl;
-	ifstream f2;
-	f2.open("github.csv");
-	for (int i = 0; i < 10; i++) {
-		f2 >> c;
-		getline(f2, b, ',');
-		f2 >> d;
-		getline(f2, b, '\n');
-		cout << c  <<  " " << d << endl;
-	}
-	f2.close();*/
+	unsigned long long ID = NULL;
+	string className = "";
+	login(ID, className);
 
 	return 0;
 }
