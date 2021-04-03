@@ -28,6 +28,8 @@ struct Student {
 
 	double GPA = 0;
 };
+
+
 struct WStudent {
 	int No;
 	unsigned long long Student_ID;
@@ -43,6 +45,15 @@ struct WStudent {
 struct NodeStudent {
 	Student data;
 	NodeStudent* pNext;
+};
+
+struct Class {
+	string name;
+	NodeStudent* student;
+};
+struct _Class {
+	Class data;
+	_Class* pNext, * pPrevious;
 };
 
 struct SchoolYear {
