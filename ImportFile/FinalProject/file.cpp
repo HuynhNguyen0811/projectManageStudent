@@ -97,6 +97,7 @@ bool importListStudents(string path, listStudent& lst)
 			info->lastName = new string;
 			info->firstName = new string;
 			info->DOB = new string;
+			info->SID = new string;
 
 			getline(file, info->no, ',');
 			getline(file, *(info->id), ',');
@@ -126,6 +127,7 @@ bool importListClasses(string path, listClass& lst) {
 
 			infoClass* info = new infoClass;
 			info->className = new string;
+			info->no = new string;
 			getline(file, info->no, ',');
 			getline(file, *(info->className), '\n');
 
