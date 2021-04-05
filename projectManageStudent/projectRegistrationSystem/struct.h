@@ -1,5 +1,22 @@
 #include <iostream>
 
+struct date;
+struct student;
+struct _student;
+struct Class;
+struct _Class;
+struct schoolYear;
+struct semester;
+struct _semester;
+struct session;
+struct _session;
+struct course;
+struct _course;
+struct score;
+struct _score;
+struct account;
+struct _account;
+
 struct date {
 	int day, month, year;
 };
@@ -32,8 +49,14 @@ struct _Class {
 	_Class* pNext, * pPrevious;
 };
 
+struct schoolYear {
+	int x;
+	int y;
+};
 struct semester {
+	schoolYear schoolYear;
 	date startDay, endDate;
+	_course* course = nullptr;
 };
 struct _semester {
 	semester data;

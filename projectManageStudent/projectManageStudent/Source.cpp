@@ -167,11 +167,29 @@ void login(unsigned long long& ID, string& className) {
 	}
 }
 
+void editFilePassword(string path, unsigned long long ID, string className, string newPassword) {
+	ofstream fileOut;
+	fileOut.open(path + ".csv", ios_base::app);
+	fileOut << ID << "," << newPassword << "," << className << endl;
+	fileOut.close();
+}
+
+void changePassword(unsigned long long ID, string className) {
+	string newPassword;
+	cout << "New password: ";
+	cin >> newPassword;
+	editFilePassword("passStudent", ID, className, newPassword);
+	cout << "Change successfully\n";
+	system("PAUSE");
+	menuStudent(ID, className);
+}
+
 void menuStudent(unsigned long long& ID, string className) {
 	system("CLS");
 	int flag;
 	cout << "\n1.Check your profile\n2.Sign course\n3.View enrolled courses\n4.View students in course\n5.Change password\n6.Log out\n0.Escape";
 	cin >> flag;
+
 	switch (flag) {
 	case 1:
 		findAndPrintStudent(ID, className);
@@ -183,6 +201,7 @@ void menuStudent(unsigned long long& ID, string className) {
 	case 4:
 		break;
 	case 5:
+		changePassword(ID, className);
 		break;
 	case 6:
 		ID = NULL;
@@ -243,6 +262,7 @@ void findAndPrintStudent(unsigned long long ID, string className) {
 }
 
 void infoStudent(WStudent stu) {
+	cout << "---------------------------------------\n";
 	_LText();
 	wcout << "Number in class: " << stu.No << endl;
 	wcout << "ID: " << stu.Student_ID << endl;
@@ -258,22 +278,50 @@ bool checkLogin(string path, unsigned long long ID, string password, string& cla
 	ifstream fileIn;
 	fileIn.open(path + ".csv", ios_base::in);
 
-	string temp, tempPassword, tempClassName;
-	unsigned long long tempID;
+	string temp, tempPassword, tempClassName, checkPassword = "";
+	unsigned long long tempID, checkID = NULL;
 	while (fileIn) {
 		getline(fileIn, temp, ',');
 		tempID = stringToLong(temp);
 		getline(fileIn, tempPassword, ',');
 		fileIn >> tempClassName;
-		if (tempID == ID && tempPassword == password) {
+		if (tempID == ID) {
 			className = tempClassName;
-			fileIn.close();
-			return 1;
+			checkID = tempID;
+			checkPassword = tempPassword;
 		}
 	}
-	fileIn.close();
-	return 0;
+	if (checkID == ID && checkPassword == password) {
+		className = tempClassName;
+		fileIn.close();
+		return 1;
+	}
+	else {
+		fileIn.close();
+		return 0;
+	}
 }
+
+//bool checkLogin(string path, unsigned long long ID, string password, string& className) {
+//	ifstream fileIn;
+//	fileIn.open(path + ".csv", ios_base::in);
+//
+//	string temp, tempPassword, tempClassName;
+//	unsigned long long tempID;
+//	while (fileIn) {
+//		getline(fileIn, temp, ',');
+//		tempID = stringToLong(temp);
+//		getline(fileIn, tempPassword, ',');
+//		fileIn >> tempClassName;
+//		if (tempID == ID && tempPassword == password) {
+//			className = tempClassName;
+//			fileIn.close();
+//			return 1;
+//		}
+//	}
+//	fileIn.close();
+//	return 0;
+//}
 
 void createSchoolYear(SchoolYear &sy) {
 	sy.x = sy.y = 0;
@@ -606,7 +654,7 @@ int main()
 	//cout << stringToInt("1234") << endl;
 	//cout << stringToLong("123456789") << endl;
 	
-	AtTheBeginningOfSchoolYear();
+	//AtTheBeginningOfSchoolYear();
 
 	unsigned long long ID = NULL;
 	string className = "";
